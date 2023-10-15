@@ -1,26 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
+import { Home } from './pages/Home'
+import { Upload } from './pages/Upload'
+import { Details } from './pages/Details'
+import { NotFound } from './pages/NotFound'
+import MainLayout from './components/MainLayout'
+import { Web3ReactProvider } from '@web3-react/core'
+import { createTheme, ThemeProvider } from '@mui/material'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
+import { connectors } from './connectors'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+    <ThemeProvider theme={theme}>
+    <Web3ReactProvider connectors={connectors}>
+      <MainLayout>
+
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/upload" element={<Upload/>}/>
+          <Route path="/details" element={<Details/>}/>
+          <Route path="*" element={<NotFound/>} />
+        </Routes>
+      </BrowserRouter>
+
+      </MainLayout>
+    </Web3ReactProvider>
+    </ThemeProvider>
+    </>
+  )
 }
 
-export default App;
+const theme = createTheme({
+
+  palette: {
+    primary: {
+      main: '#181A1F',
+      light: '#FD8A07',
+    },
+    secondary: {
+      main: '#008fc7',
+    },
+  },
+
+})
+
+export default App
