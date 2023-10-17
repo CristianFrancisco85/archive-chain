@@ -1,19 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import useContract from '../hooks/useContract'
 import { useMetaMask } from '../connectors/metaMask'
 import { parse } from 'path'
+import { useNavigate } from 'react-router-dom'
 
 
 export const Home = () => {
 
     const contract = useContract()
+    const navigae = useNavigate()
     
     const { useIsActive} = useMetaMask
     const isActive = useIsActive()
 
-    const [fileItems, setFileItems] = React.useState([] as any)
+    const [fileItems, setFileItems] = useState([] as any)
+    const [search, setSearch] = useState('')
 
     useEffect(() => {
         if (isActive) {
@@ -31,12 +34,10 @@ export const Home = () => {
                             values: result[5].split(';').filter((value:string) => value !== ''),
                             ext: result[2].split('.').pop(),
                         })
-                        console.log(items.length)
                     }).catch((err:any)=>{
                         console.log('nftMetadata', err)
                     })
                 }
-                console.log(items.length)
                 setFileItems(items)
             }).catch((err:any)=>{
                 console.log('totalSupply', err)
@@ -44,19 +45,45 @@ export const Home = () => {
         }
     }, [isActive])
 
-  const logos = [
-    { ext : 'jpg', url: '/assets/imageIcon.png' },
-    { ext : 'jpeg', url: '/assets/imageIcon.png' },
-    { ext : 'png', url: '/assets/imageIcon.png' },
-    { ext : 'pdf', url: '/assets/pdfIcon.png' },
-    { ext : 'doc', url: '/assets/docIcon.png' },
-    { ext : 'docx', url: '/assets/docIcon.png' },
-    { ext : 'txt', url: '/assets/txtIcon.png' },
-    { ext : 'ppt', url: '/assets/pptIcon.png' },
-    { ext : 'pptx', url: '/assets/pptIcon.png' },
-    { ext : 'xls', url: '/assets/xlsIcon.png' },
-    { ext : 'xlsx', url: '/assets/xlsIcon.png' },
-  ]
+    const handleSearch = () => {
+
+        const searchValue = search === '' ? '.' : search
+        contract?.findTokensByPartialName(searchValue).then((result:any)=>{
+            setFileItems([])
+            result.forEach((element:any) => {
+                contract?.nftMetadata(element.toNumber()).then((result:any)=>{
+                    setFileItems((items:any) => [...items, {
+                        id: element,
+                        ipfsHash: result[0],
+                        fileHash: result[1],
+                        fileName: result[2],
+                        fileSizeKB: parseInt(result[3]._hex),
+                        keys: result[4].split(';').filter((key:string) => key !== ''),
+                        values: result[5].split(';').filter((value:string) => value !== ''),
+                        ext: result[2].split('.').pop(),
+                    }])
+                }).catch((err:any)=>{
+                    console.log('nftMetadata', err)
+                })  
+            })
+        }).catch((err:any)=>{
+            console.log('findTokensByPartialName', err)
+        })
+    }
+
+    const logos = [
+        { ext : 'jpg', url: '/assets/imageIcon.png' },
+        { ext : 'jpeg', url: '/assets/imageIcon.png' },
+        { ext : 'png', url: '/assets/imageIcon.png' },
+        { ext : 'pdf', url: '/assets/pdfIcon.png' },
+        { ext : 'doc', url: '/assets/docIcon.png' },
+        { ext : 'docx', url: '/assets/docIcon.png' },
+        { ext : 'txt', url: '/assets/txtIcon.png' },
+        { ext : 'ppt', url: '/assets/pptIcon.png' },
+        { ext : 'pptx', url: '/assets/pptIcon.png' },
+        { ext : 'xls', url: '/assets/xlsIcon.png' },
+        { ext : 'xlsx', url: '/assets/xlsIcon.png' },
+    ]
 
   return (
     <>
@@ -68,20 +95,21 @@ export const Home = () => {
           padding: '2rem',
       }}>
 
-      <Box>
+        <Box display='flex' justifyContent='center' alignItems='center'>
+            <TextField fullWidth name='nombre' label="Buscar Archivo" variant="outlined" sx={{
+                marginY:5,
+                width: { xs: '20em', sm: '30em', md: '30em', lg: '50em' },
+            }} 
+            onChange={(event:any) => setSearch(event.target.value)}
+            />
+            <Button variant="contained" color='secondary' sx={{
+                marginY:5,
+                marginLeft: 2,
+            }} onClick={handleSearch}>
+                Buscar
+            </Button>
 
-        <TextField fullWidth required name='nombre' label="Buscar Archivo" variant="outlined" sx={{marginY:2}} />
-
-        <Typography variant="h4" component="div"
-            sx={{
-                flexGrow: 1,
-                fontSize: '2rem',
-                marginY: '1rem',
-            }}
-        >
-            /home/usuario/dir1/.../dirN
-        </Typography>
-      </Box>
+        </Box>
         
       <Grid container spacing={2} justifyContent='center' alignItems='center'>
 
