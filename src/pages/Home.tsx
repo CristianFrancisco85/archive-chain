@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 export const Home = () => {
 
     const contract = useContract()
-    const navigae = useNavigate()
+    const navigate = useNavigate()
     
     const { useIsActive} = useMetaMask
     const isActive = useIsActive()
@@ -69,6 +69,10 @@ export const Home = () => {
         }).catch((err:any)=>{
             console.log('findTokensByPartialName', err)
         })
+    }
+
+    const handleDetails = (id:number) => {
+        navigate(`/details/${id}`)
     }
 
     const logos = [
@@ -133,7 +137,7 @@ export const Home = () => {
                 </Typography>
                 <Button variant="contained" color='secondary' sx={{
                     marginTop: '1rem',
-                }}>
+                }} onClick={() => handleDetails(item.id)}>
                     Ver Detalles
                 </Button>
             </Grid>

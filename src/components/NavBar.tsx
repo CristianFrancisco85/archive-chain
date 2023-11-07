@@ -15,7 +15,6 @@ import { MetaMaskBtn } from './MetaMaskBtn'
 const pages = [
     { name: 'Explorador', href: '/'},
     { name: 'Subir Archivo', href: '/upload'},
-    { name: 'Detalle', href: '/details'},
 ]
 
 export const NavBar = () => {

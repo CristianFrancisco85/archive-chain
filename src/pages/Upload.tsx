@@ -62,23 +62,6 @@ export const Upload = () => {
 
     }
 
-    const handleUpload2 = async () => {
-
-        if(isActive && account && provider && contract){
-            provider?.getBalance(account).then((result)=>{
-                console.log('balance', Number(formatEther(result)))
-            })
-            contract.totalSupply().then((result:any)=>{
-                console.log('totalSupply', result)
-            })
-            contract.nftMetadata(0).then((result:any)=>{
-                console.log('nftMetadata', result)
-            })
-        }
-    }
-
-
-
     const handleAddTag = () => {
         setMetadata({...metadata, tags: [...metadata.tags, {key: '', value: ''}]})
     }
