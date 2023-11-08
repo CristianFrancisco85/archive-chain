@@ -12,6 +12,18 @@ export const MetaMaskBtn = () => {
   const account = useAccount()
 
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        onConnectMetaMask()
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    init()
+  }, [])
+
   const onConnectMetaMask = async () => {
     const chainId = 11155111
     try {

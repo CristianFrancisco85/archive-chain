@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import useContract from '../hooks/useContract'
+import { useMetaMask } from '../connectors/metaMask'
 
 
 export const Details = () => {
 
+    const { useAccount } = useMetaMask
     const params = useParams()
     const contract = useContract()
+    const account = useAccount()
 
     const [metadata, setMetadata] = useState({} as any)
 
@@ -49,6 +52,18 @@ export const Details = () => {
         })
     }
 
+    const handleTransfer = async () => {
+        const address = prompt('Ingrese la dirección a transferir')
+        if(address){
+            await contract?.transferFrom(metadata.owner, address, metadata.id)
+            .then((result:any)=>{
+                alert('Transferencia exitosa')
+            }).catch((err:any)=>{
+                alert('Error al transferir, intenta de nuevo')
+            })
+        }
+    }
+
 
   return (
     <>
@@ -72,7 +87,8 @@ export const Details = () => {
                 marginX: '1rem',
                 width: '40%',
                 height: '2.5rem',
-            }}>
+            }} onClick={handleTransfer}
+                disabled={metadata.owner !== account}>
                 Transferir
             </Button>
         </Box>
